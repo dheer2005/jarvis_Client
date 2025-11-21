@@ -6,8 +6,3 @@ export const environment = {
   serverUrl: 'https://jarvishserver001.bsite.net'
 };
 
-// src/environments/environment.prod.ts (Production)
-// export const environment = {
-//   production: true,
-//   serverUrl: 'https://jarvishserver001.bsite.net'
-// };
