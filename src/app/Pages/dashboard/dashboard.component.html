@@ -1,0 +1,186 @@
+<div class="dashboard">
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <div class="logo">🤖 JARVIS</div>
+        <div class="user-info">
+          <span class="username">👤 {{ user?.username }}</span>
+          <button (click)="logout()" class="logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <div class="status" [class.connected]="isConnected">
+          {{ isConnected ? '🟢 Server Connected' : '🔴 Server Disconnected' }}
+        </div>
+        <div class="status" [class.connected]="machineConnected">
+          {{ machineConnected ? '🖥️ ' + machineName : '⚠️ No Machine' }}
+        </div>
+      </div>
+
+      <!-- Warning -->
+      <div *ngIf="isConnected && !machineConnected" class="warning-box">
+        ⚠️ <strong>Local Agent not connected!</strong><br>
+        Run JarvisLocalAgent.exe on your PC with your credentials.
+      </div>
+
+      <div *ngIf="!machineConnected" class="download-section">
+        <h3>📥 Setup Your PC</h3>
+        <p>To control your PC remotely, download and install the JARVIS Agent:</p>
+        
+        <div class="download-steps">
+            <div class="step">
+            <span class="step-num">1</span>
+            <div class="step-content">
+                <strong>Download Agent</strong>
+                <p>Click the button below to download</p>
+                <a [href]="downloadUrl" class="download-btn" download>
+                ⬇️ Download JARVIS Agent (Windows)
+                </a>
+            </div>
+            </div>
+            
+            <div class="step">
+            <span class="step-num">2</span>
+            <div class="step-content">
+                <strong>Extract & Run</strong>
+                <p>Extract the ZIP and run <code>install.bat</code></p>
+            </div>
+            </div>
+            
+            <div class="step">
+            <span class="step-num">3</span>
+            <div class="step-content">
+                <strong>Login</strong>
+                <p>Use the same email & password you registered with:</p>
+                <code>{{ user?.email }}</code>
+            </div>
+            </div>
+            
+            <div class="step">
+            <span class="step-num">4</span>
+            <div class="step-content">
+                <strong>Done!</strong>
+                <p>Refresh this page and start controlling your PC!</p>
+                <!-- <button (click)="loadMachines()" class="refresh-btn">🔄 Refresh</button> -->
+                <button class="refresh-btn">🔄 Refresh</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+      <!-- Command Input -->
+      <div class="command-input">
+        <input 
+          type="text" 
+          [(ngModel)]="voiceCommand" 
+          placeholder="Type command: 'open chrome', 'volume up'"
+          (keyup.enter)="sendCommand()"
+          [disabled]="!machineConnected"
+        />
+        <button (click)="sendCommand()" [disabled]="!machineConnected">
+          🎤 Send
+        </button>
+      </div>
+
+      <!-- Controls Grid -->
+      <div class="controls-grid">
+        <!-- Volume -->
+        <div class="control-card">
+          <h3>🔊 Volume</h3>
+          <div class="btn-row">
+            <button (click)="jarvis.volumeDown()" [disabled]="!machineConnected">🔉</button>
+            <button (click)="jarvis.volumeUp()" [disabled]="!machineConnected">🔊</button>
+          </div>
+          <input type="range" min="0" max="100" [(ngModel)]="volumeLevel"
+            (mouseup)="jarvis.setVolume(volumeLevel)" [disabled]="!machineConnected" />
+          <span>{{ volumeLevel }}%</span>
+        </div>
+
+        <!-- Window -->
+        <div class="control-card">
+          <h3>🪟 Window</h3>
+          <div class="btn-row">
+            <button (click)="jarvis.maximizeWindow()" [disabled]="!machineConnected">⬜</button>
+            <button (click)="jarvis.minimizeWindow()" [disabled]="!machineConnected">➖</button>
+            <button (click)="jarvis.restoreWindow()" [disabled]="!machineConnected">◻️</button>
+          </div>
+        </div>
+
+        <!-- Brightness -->
+        <div class="control-card">
+          <h3>☀️ Brightness</h3>
+          <input type="range" min="0" max="100" [(ngModel)]="brightnessLevel"
+            (mouseup)="jarvis.setBrightness(brightnessLevel)" [disabled]="!machineConnected" />
+          <span>{{ brightnessLevel }}%</span>
+        </div>
+
+        <!-- Apps -->
+        <div class="control-card">
+          <h3>🚀 Apps</h3>
+          <div class="btn-row wrap">
+            <button (click)="jarvis.openApp('google_chrome')" [disabled]="!machineConnected">Chrome</button>
+            <button (click)="jarvis.openApp('notepad')" [disabled]="!machineConnected">Notepad</button>
+            <button (click)="jarvis.openApp('calculator')" [disabled]="!machineConnected">Calc</button>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="control-card">
+          <h3>📸 Actions</h3>
+          <div class="btn-row">
+            <button (click)="jarvis.takeScreenshot()" [disabled]="!machineConnected">Screenshot</button>
+            <button (click)="jarvis.requestSystemInfo()" [disabled]="!machineConnected">System Info</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Console -->
+      <div class="console">
+        <div class="console-header">
+          <span>📋 Response Log</span>
+          <button (click)="responses = []">Clear</button>
+        </div>
+        <div class="console-body">
+          <div *ngFor="let msg of responses" class="log-item">{{ msg }}</div>
+          <div *ngIf="responses.length === 0" class="empty">No responses yet</div>
+        </div>
+      </div>
+
+      <!-- Screenshot -->
+      <div *ngIf="latestScreenshot" class="screenshot-box">
+        <div class="screenshot-header">
+          <span>📷 Screenshot</span>
+          <button (click)="latestScreenshot = null">×</button>
+        </div>
+        <img [src]="latestScreenshot" />
+      </div>
+
+      <div *ngIf="systemInfo" class="system-info-card">
+        <h2>🖥️ System Information</h2>
+
+        <div class="info-row">
+            <span class="label">Machine Name:</span>
+            <span class="value">{{ systemInfo.machineName }}</span>
+        </div>
+
+        <div class="info-row">
+            <span class="label">OS:</span>
+            <span class="value">{{ systemInfo.os }}</span>
+        </div>
+
+        <div class="info-row">
+            <span class="label">User:</span>
+            <span class="value">{{ systemInfo.userName }}</span>
+        </div>
+
+        <h3>📦 Installed Apps</h3>
+
+        <div class="apps-list">
+            <div *ngFor="let app of systemInfo.installedApps" class="app-item">
+                <img [src]="getAppIcon(app)" class="app-icon" />
+                <span>{{app}}</span>
+            </div>
+        </div>
+    </div>
+</div>
