@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   brightnessLevel = 50;
   responses: string[] = [];
   latestScreenshot: string | null = null;
-  downloadUrl: any = 'https://drive.google.com/file/d/1WIRZZSjadjU2N0y4LRXW3kvS6ISV5y8Q/view?usp=sharing';
+  downloadUrl: any = 'https://drive.google.com/file/d/1NzzxVR1HeLg_PEgFL4fJMNuQR3g1df2A/view?usp=sharing';
 
   private subs: Subscription[] = [];
   systemInfo: any = null;
