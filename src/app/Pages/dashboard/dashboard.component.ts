@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   brightnessLevel = 50;
   responses: string[] = [];
   latestScreenshot: string | null = null;
-  downloadUrl: any = 'https://drive.google.com/file/d/172Y3ytidG6NyTm0KoiNaSZxPnpfUQpCz/view?usp=sharing';
+  downloadUrl: any = 'https://drive.google.com/file/d/1xLcF0QPnMKIAF_k7nrxuLSt8WS_vC0aD/view?usp=sharing';
 
   private subs: Subscription[] = [];
   systemInfo: any = null;
@@ -51,6 +51,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }),
       this.jarvis.getScreenshots().subscribe(img => this.latestScreenshot = img)
     );
+  }
+
+  loadMachines(){
+
   }
 
   getAppIcon(appName: string): string {

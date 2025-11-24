@@ -50,7 +50,10 @@ export class RegisterComponent {
     }).subscribe({
       next: (response) => {
         if (response.success) {
+          console.log("response:", response);
           this.success = 'Account created successfully!';
+          localStorage.setItem('jarvis_token', response.token ?? '');
+          localStorage.setItem('jarvis_user', JSON.stringify(response.user));
           setTimeout(() => {
             this.router.navigate(['/dashboard']);
           }, 1000);

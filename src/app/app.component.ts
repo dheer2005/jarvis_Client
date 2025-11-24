@@ -19,6 +19,9 @@ export class AppComponent {
   constructor(public jarvis: JarvisService) {}
 
   async ngOnInit() {
+    // IMPORTANT: Initialize Jarvis connection first
+    await this.jarvis.initConnection();
+
     // Subscribe to responses
     this.jarvis.getCommandResults().subscribe(msg => {
       this.responses.unshift(msg);
@@ -29,9 +32,17 @@ export class AppComponent {
       this.latestScreenshot = img;
     });
 
-    setInterval(() => {
-      this.isConnected = true; 
-    }, 1000);
+    // Subscribe to connection status
+    this.jarvis.getConnectionStatus().subscribe(status => {
+      this.isConnected = status;
+    });
+
+    // Subscribe to machine status
+    this.jarvis.getMachineStatus().subscribe(machine => {
+      if (machine) {
+        this.responses.unshift(`🖥️ Machine connected: ${machine.machineName}`);
+      }
+    });
 
     this.loadMachines();
   }

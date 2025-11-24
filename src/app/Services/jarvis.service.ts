@@ -111,13 +111,18 @@ export class JarvisService {
 
   private async connect() {
     try {
+      console.log('Attempting to connect to:', this.serverUrl);
       await this.hubConnection.start();
       console.log('✅ Connected to Jarvis Server!');
       this.connectionStatus$.next(true);
       await this.registerAsWebClient();
-    } catch (err) {
+    } catch (err: any) {
       console.error('❌ Connection failed:', err);
+      console.error('Error details:', err.message);
       this.connectionStatus$.next(false);
+      
+      // Retry after 5 seconds
+      console.log('Retrying in 5 seconds...');
       setTimeout(() => this.connect(), 5000);
     }
   }
